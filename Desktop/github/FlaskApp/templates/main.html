@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+svg {
+  font: 10px sans-serif;
+}
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
+<body>
+<h3>{{ title }}</h3>
+
+<meta content="text/html" charset= "utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<script src = "//d3js.org/d3.v3.min.js"></script>>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+<script type="text/javascript">
+//var ret_value;
+
+var n = 40;
+var data = [];
+
+function fill_array(value){
+	data.push(value);
+	console.log('the value of data is ' + value);
+}
+
+function get_ajax(){
+	console.log('inside get_ajax');
+	var ret_value;
+$(function(){
+$.ajax({
+	url: '/_add_numbers',
+	success: function(data){
+		ret_value = data.result;
+		console.log('the value being 1 returned is ' + ret_value);
+		document.getElementById("result").innerHTML = ret_value;
+		fill_array(ret_value);
+	}
+});
+});
+
+}
+
+function call_ajax(){
+	console.log('im inside call_ajax');
+for (var i=0;i<n;i++){
+	get_ajax();
+}
+}
+call_ajax();
+    console.log('the value of data is, before tick' + data);
+var margin = {top: 20, right: 20, bottom: 20, left: 30},
+    width = 480 - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
+var x = d3.scale.linear()
+    .domain([0, n - 1])
+    .range([0, width]);
+var y = d3.scale.linear()
+    .domain([-1, 1])
+    .range([height, 0]);
+var line = d3.svg.line()
+    .x(function(d, i) { return x(i); })
+    .y(function(d, i) { return y(d); });
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + y(0) + ")")
+    .call(d3.svg.axis().scale(x).orient("bottom"));
+svg.append("g")
+    .attr("class", "y axis")
+    .call(d3.svg.axis().scale(y).orient("left"));
+var path = svg.append("g")
+    .attr("clip-path", "url(#clip)")
+  .append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("d", line);
+
+tick();
+function tick() {
+
+console.log('inside tick, value of data is ' + data);
+ 
+get_ajax();
+
+
+  path
+      .attr("d", line)
+      .attr("transform", null)
+      .transition()
+      .duration(500)
+      .ease("linear")
+      .attr("transform", "translate(" + x(-1) + ",0)")
+      .each("end", tick);
+  // pop the old data point off the front
+  data.shift();
+}
+////////////////////////////plot the  second graph///////////////////////////
+var n2 = 40;
+var data2 = [];
+
+function fill_array2(value2){
+	data2.push(value2);
+	console.log('the value of data2 is ' + value2);
+}
+
+function get_ajax2(){
+	console.log('inside get_ajax2');
+	var ret_value2;
+$(function(){
+$.ajax({
+	url: '/_add_numbers',
+	success: function(data){
+		ret_value2 = data.result;
+		console.log('the value being 2 returned is ' + ret_value2);
+		document.getElementById("result2").innerHTML = ret_value2;
+		fill_array2(ret_value2);
+	}
+});
+});
+
+}
+
+function call_ajax2(){
+	console.log('im inside call_ajax2');
+for (var i=0;i<n2;i++){
+	get_ajax2();
+}
+}
+call_ajax2();
+    console.log('the value of data is, before tick2' + data2);
+var margin2 = {top: 20, right: 20, bottom: 20, left: 700},
+    width2 = 1060 - margin2.left - margin2.right,
+    height2 = 350 - margin2.top - margin2.bottom;
+var x2 = d3.scale.linear()
+    .domain([0, n2 - 1])
+    .range([0,width2]);
+var y2 = d3.scale.linear()
+    .domain([-1, 1])
+    .range([height2, margin2.top]);
+var line2 = d3.svg.line()
+    .x(function(d, i) { return x2(i); })
+    .y(function(d, i) { return y2(d); });
+var svg2 = d3.select("body").append("svg")
+    .attr("width", width2 + margin2.left + margin2.right)
+    .attr("height", height2 + margin2.top + margin2.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+svg2.append("defs").append("clipPath")
+    .attr("id", "clip2")
+  .append("rect")
+    .attr("width", width2)
+    .attr("height", height2);
+svg2.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + y2(0) + ")")
+    .call(d3.svg.axis().scale(x2).orient("bottom"));
+svg2.append("g")
+    .attr("class", "y axis")
+    .call(d3.svg.axis().scale(y2).orient("left"));
+var path2 = svg2.append("g")
+    .attr("clip-path", "url(#clip2)")
+  .append("path")
+    .datum(data2)
+    .attr("class", "line")
+    .attr("d", line2);
+
+tick2();
+function tick2() {
+
+console.log('inside tick2, value of data2 is ' + data2);
+ 
+get_ajax2();
+
+
+  path2
+      .attr("d", line2)
+      .attr("transform", null)
+      .transition()
+      .duration(500)
+      .ease("linear")
+      .attr("transform", "translate(" + x2(-1) + ",0)")
+      .each("end", tick2);
+  // pop the old data point off the front
+  data2.shift();
+}
+
+
+
+</script>
+<p id="result"></p>
+<p id="result2"></p>
+

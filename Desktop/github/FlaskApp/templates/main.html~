@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+svg {
+  font: 10px sans-serif;
+}
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
+<body>
+<h3>{{ title }}</h3>
+
+<meta content="text/html" charset= "utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<script src = "//d3js.org/d3.v3.min.js"></script>>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+<script type="text/javascript">
+var ret_value;
+var submit_form;  
+$(function() {
+      window.submit_form = function xyz(e) {
+      $.getJSON($SCRIPT_ROOT + '/_add_numbers', {               //getJSON script to get data from the server
+      }, function(data) {					//define what to do with the returned value
+	ret_value = data.result;
+	document.getElementById("result").innerHTML = ret_value;
+//	return ret_value;	
+//        $('#result').text(data.result);
+//        $('input[name=a]').focus().select();
+      });
+      return false;
+    };
+
+//         window.setInterval(function(){
+//	  submit_form()
+//	 },500);
+//  });
+////////////////////////////////////////////////////////////////////////////////////////
+
+var n = 40,							//Number of values to generate
+    random = d3.random.normal(0, .2);
+    var data = [];				//Random number generation of normal distribution
+    for (var i = 0;i<n; i++){
+    	submit_form()
+    	data.push(random);
+        console.log('the value of ret_value is ' + ret_value);
+    }
+    console.log('the value of data is ' + data);
+//    data = d3.range(n).map(function() { submit_form(); console.log('the value of random is ' + ret_value); return ret_value });
+var margin = {top: 20, right: 20, bottom: 20, left: 40},
+    width = 460 - margin.left - margin.right,
+    height = 250 - margin.top - margin.bottom;
+var x = d3.scale.linear()
+    .domain([0, n - 1])
+    .range([0, width]);
+var y = d3.scale.linear()
+    .domain([-1, 1])
+    .range([height, 0]);
+var line = d3.svg.line()
+    .x(function(d, i) { return x(i); })
+    .y(function(d, i) { return y(d); });
+//    console.log('the value in y axis is ' + y(d))
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + y(0) + ")")
+    .call(d3.svg.axis().scale(x).orient("bottom"));
+svg.append("g")
+    .attr("class", "y axis")
+    .call(d3.svg.axis().scale(y).orient("left"));
+var path = svg.append("g")
+    .attr("clip-path", "url(#clip)")
+  .append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("d", line);
+
+tick();
+function tick() {
+
+submit_form()
+// var num_val = submit_form().
+  // push a new data point onto the back
+  data.push(ret_value);
+//	console.log('the value of incoming data is ' + ret_value);
+  // redraw the line, and slide it to the left
+  path
+      .attr("d", line)
+      .attr("transform", null)
+      .transition()
+      .duration(500)
+      .ease("linear")
+      .attr("transform", "translate(" + x(-1) + ",0)")
+      .each("end", tick);
+  // pop the old data point off the front
+  data.shift();
+}
+////////////////////////////////////////Code for plotting second graph////////////////////////////
+
+/*
+var margin2 = {top: 250, right: 20, bottom: 20, left: 400},
+    width2 = 260 - margin2.left - margin2.right,
+    height2 = 150 - margin2.top - margin2.bottom;
+var x2 = d3.scale.linear()
+    .domain([0, n - 1])
+    .range([0, width2]);
+var y2 = d3.scale.linear()
+    .domain([-1, 1])
+    .range([height2, 0]);
+var line2 = d3.svg.line()
+    .x(function(d, i) { return x2(i); })
+    .y(function(d, i) { return y2(d); });
+//    console.log('the value in y axis is ' + y(d))
+var svg2 = d3.select("body").append("svg")
+    .attr("width", width2 + margin2.left + margin2.right)
+    .attr("height", height2 + margin2.top + margin2.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+svg2.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width2)
+    .attr("height", height2);
+svg2.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + y2(0) + ")")
+    .call(d3.svg.axis().scale(x2).orient("bottom"));
+svg2.append("g")
+    .attr("class", "y axis")
+    .call(d3.svg.axis().scale(y2).orient("left"));
+var path2 = svg2.append("g")
+    .attr("clip-path", "url(#clip)")
+  .append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("d", line);
+
+tick2();
+function tick2() {
+
+submit_form()
+
+// var num_val = submit_form().
+  // push a new data point onto the back
+  data.push(ret_value);
+	console.log('the value of incoming value is ' + ret_value);
+  // redraw the line, and slide it to the left
+  path2
+      .attr("d", line)
+      .attr("transform", null)
+      .transition()
+      .duration(500)
+      .ease("linear")
+      .attr("transform", "translate(" + x2(-1) + ",0)")
+      .each("end", tick2);
+  // pop the old data point off the front
+  data.shift();
+}
+*/
+
+
+
+})
+
+</script>
+<p id="result"></p>
+
+
